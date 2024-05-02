@@ -88,15 +88,24 @@ class FtdiDev():
         if status:
             raise RuntimeError(f"Error setting baudrate {status}")
 
-    def set_chars(self, data_bits: int, parity: int, stop_bits: int) -> None:
+    def set_chars(self, data_bits: int, parity: str, stop_bits: int) -> None:
         """Set data len, parity and stop bits."""
         if not self.handle:
             raise ValueError ("Invalid handle")
 
-        status = libftdi.FT_SetDataCharacteristics(self.handle, c_char(data_bits), c_char(stop_bits), c_char(parity))
+        if data_bits not in (7, 8):
+            raise ValueError ("Invalid data bits")
+        bits = c_char(data_bits)
+
+        parity_dict = {"N" : 0, "O" : 1, "E": 2}
+        par = c_char(parity_dict[parity])
+
+        stop_dict = {1: 0, 2: 2}
+        stops = c_char(stop_dict[stop_bits])
+
+        status = libftdi.FT_SetDataCharacteristics(self.handle, bits, stops, par)
         if status:
             raise RuntimeError(f"Error setting data characteristics {status}")
-
 
 def get_devices() -> list[FtdiDev]:
     """Get a list of available FTDI devices."""
