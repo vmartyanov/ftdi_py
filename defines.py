@@ -7,6 +7,7 @@ libftdi = WinDLL('ftd2xx', use_last_error=True)
 #type aliases
 DWORD       = c_ulong
 ULONG       = c_ulong
+WORD        = c_ushort
 
 FT_HANDLE   = c_void_p
 
@@ -22,6 +23,38 @@ class FT_DEVICE_LIST_INFO_NODE(Structure):
 		("ftHandle", FT_HANDLE)
 	]
 
+#useless :-/
+class FTDCB(Structure):
+    _fields_ = [
+		("DCBlength", DWORD),
+		("BaudRate", DWORD),
+		("fBinary", DWORD, 1),
+		("fParity", DWORD, 1),
+		("fOutxCtsFlow", DWORD, 1),
+		("fOutxDsrFlow", DWORD, 1),
+		("fDtrControl", DWORD, 2),
+		("fDsrSensitivity", DWORD, 1),
+		("fTXContinueOnXoff", DWORD, 1),
+		("fOutX", DWORD, 1),
+		("fInX", DWORD, 1),
+		("fErrorChar", DWORD, 1),
+		("fNull", DWORD, 1),
+		("fRtsControl", DWORD, 2),
+		("fAbortOnError", DWORD, 1),
+		("fDummy2", DWORD, 17),
+		("wReserved", WORD),
+		("XonLim", WORD),
+		("XoffLim", WORD),
+		("ByteSize", c_char),
+		("Parity", c_char),
+		("StopBits", c_char),
+		("XonChar", c_char),
+		("XoffChar", c_char),
+		("ErrorChar", c_char),
+		("EofChar", c_char),
+		("EvtChar", c_char),
+		("wReserved1", WORD)
+    ]
 
 #prototypes:
 libftdi.FT_Close.argtypes = [FT_HANDLE]
@@ -41,5 +74,12 @@ libftdi.FT_OpenEx.restype = ULONG
 libftdi.FT_Read.argtypes = [FT_HANDLE, c_void_p, DWORD, POINTER(DWORD)]
 libftdi.FT_Read.restype = ULONG
 
+libftdi.FT_SetBaudRate.argtypes = [FT_HANDLE, DWORD]
+libftdi.FT_SetBaudRate.restype = ULONG
+
+libftdi.FT_SetDataCharacteristics.argtypes = [FT_HANDLE, c_char, c_char, c_char]
+
 libftdi.FT_Write.argtypes = [FT_HANDLE, c_void_p, DWORD, POINTER(DWORD)]
 libftdi.FT_Write.restype = ULONG
+
+libftdi.FT_W32_GetCommState.argtypes = [FT_HANDLE, POINTER(FTDCB)]

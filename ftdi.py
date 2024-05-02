@@ -62,18 +62,41 @@ class FtdiDev():
     def serial_write(self, data: bytes) -> None:
         """Write to COM-port."""
         #todo return number of bytes written?
-        if self.handle:
-            written = DWORD(0)
-            libftdi.FT_Write(self.handle, data, len(data), byref(written))
+        if not self.handle:
+            raise ValueError ("Invalid handle")
+
+        written = DWORD(0)
+        libftdi.FT_Write(self.handle, data, len(data), byref(written))
 
     def serial_read(self, count: int) -> None | bytes:
         """Read from COM-port."""
-        if self.handle:
-            read = DWORD(0)
-            buffer = create_string_buffer(count)
-            libftdi.FT_Read(self.handle, buffer, count, byref(read))
-            return buffer.raw
-        return None
+        if not self.handle:
+            raise ValueError ("Invalid handle")
+
+        read = DWORD(0)
+        buffer = create_string_buffer(count)
+        libftdi.FT_Read(self.handle, buffer, count, byref(read))
+        return buffer.raw
+
+    def set_baud_rate(self, baud_rate: int) -> None:
+        """Set baud rate"""
+        if not self.handle:
+            raise ValueError ("Invalid handle")
+
+        speed = DWORD(baud_rate)
+        status = libftdi.FT_SetBaudRate(self.handle, speed)
+        if status:
+            raise RuntimeError(f"Error setting baudrate {status}")
+
+    def set_chars(self, data_bits: int, parity: int, stop_bits: int) -> None:
+        """Set data len, parity and stop bits."""
+        if not self.handle:
+            raise ValueError ("Invalid handle")
+
+        status = libftdi.FT_SetDataCharacteristics(self.handle, c_char(data_bits), c_char(stop_bits), c_char(parity))
+        if status:
+            raise RuntimeError(f"Error setting data characteristics {status}")
+
 
 def get_devices() -> list[FtdiDev]:
     """Get a list of available FTDI devices."""
