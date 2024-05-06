@@ -107,6 +107,19 @@ class FtdiDev():
         if status:
             raise RuntimeError(f"Error setting data characteristics {status}")
 
+    def serial_rx_count(self) -> int:
+        """Get number of characters in RX queue"""
+        if not self.handle:
+            raise ValueError ("Invalid handle")
+
+        count = DWORD(0)
+        status = libftdi.FT_GetQueueStatus(self.handle, byref(count))
+        if status:
+            raise RuntimeError(f"Error calling FT_GetQueueStatus {status}")
+        #print (type(count))
+        return count.value
+
+
 def get_devices() -> list[FtdiDev]:
     """Get a list of available FTDI devices."""
     ret: list[FtdiDev] = []

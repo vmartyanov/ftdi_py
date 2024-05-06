@@ -68,6 +68,9 @@ libftdi.FT_GetDeviceInfoList.restype = ULONG
 libftdi.FT_GetLibraryVersion.argtypes = [POINTER(DWORD)]
 libftdi.FT_GetLibraryVersion.restype = ULONG
 
+libftdi.FT_GetQueueStatus.argtypes = [FT_HANDLE, POINTER(DWORD)]
+libftdi.FT_GetQueueStatus.restype = ULONG
+
 libftdi.FT_OpenEx.argtypes = [c_void_p, DWORD, POINTER(FT_HANDLE)]
 libftdi.FT_OpenEx.restype = ULONG
 
