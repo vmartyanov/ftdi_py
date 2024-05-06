@@ -3,7 +3,7 @@
 from ctypes import *
 from types import TracebackType
 
-from defines import *
+from ftdi_py.defines import *
 
 #check library version
 LIB_VERSION = DWORD()
